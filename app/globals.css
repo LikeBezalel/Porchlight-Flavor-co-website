@@ -1,0 +1,65 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+
+  /* Brand colors */
+  --color-cream: #fdf8f2;
+  --color-cream-dark: #f2e9da;
+  --color-parchment: #ede0cc;
+  --color-brown: #3b2a1a;
+  --color-brown-light: #6b4c32;
+  --color-brown-muted: #8b6f5a;
+  --color-gold: #c4893a;
+  --color-gold-light: #daa85e;
+  --color-gold-pale: #f5e8d0;
+  --color-warm-white: #fffcf8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-brown);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+}
+
+/* Porch-light glow — used exactly once, on the hero */
+.porch-light-glow {
+  position: relative;
+}
+.porch-light-glow::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(196, 137, 58, 0.18) 0%,
+    rgba(196, 137, 58, 0.06) 45%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-dragging="true"] {
+  cursor: grabbing;
+}
