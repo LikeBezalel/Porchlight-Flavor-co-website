@@ -3,7 +3,7 @@ import { siteConfig } from "@/data/site";
 
 export default function Footer() {
   return (
-    <footer className="bg-[var(--color-brown)] text-[var(--color-parchment)] mt-16">
+    <footer className="bg-[var(--color-ink)] text-white/70 mt-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
         <div>
           <p
@@ -12,13 +12,13 @@ export default function Footer() {
           >
             Porch Light Flavor Co.
           </p>
-          <p className="text-sm text-[var(--color-parchment)]/70 leading-relaxed">
+          <p className="text-sm text-white/50 leading-relaxed">
             {siteConfig.deliveryNote}
           </p>
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold-light)] mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-red)] mb-3">
             Quick Links
           </p>
           <ul className="space-y-1.5 text-sm">
@@ -32,7 +32,7 @@ export default function Footer() {
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="text-[var(--color-parchment)]/80 hover:text-white transition-colors"
+                  className="text-white/60 hover:text-white transition-colors"
                 >
                   {l.label}
                 </Link>
@@ -42,10 +42,10 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold-light)] mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-red)] mb-3">
             Get in Touch
           </p>
-          <ul className="space-y-1.5 text-sm text-[var(--color-parchment)]/80">
+          <ul className="space-y-1.5 text-sm text-white/60">
             <li>
               <a
                 href={`tel:${siteConfig.phone}`}
@@ -87,7 +87,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 text-center py-4 text-xs text-[var(--color-parchment)]/40">
+      <div className="border-t border-white/10 text-center py-4 text-xs text-white/30">
         &copy; {new Date().getFullYear()} Porch Light Flavor Co. All rights reserved.
       </div>
     </footer>
