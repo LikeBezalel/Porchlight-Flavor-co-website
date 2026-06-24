@@ -102,4 +102,36 @@ export const menuCategories: MenuCategory[] = [
       },
     ],
   },
+  {
+    id: "made-in-house",
+    title: "Made In House",
+    tagline:
+      "Small-batch sauces and salsas made from scratch with bold Southwest flavors. Perfect for gifting or stocking your own kitchen.",
+    items: [
+      {
+        name: "Midnight Ember Red Chili Sauce",
+        description:
+          "Slow-simmered NM red chili sauce with deep, smoky heat. Great on everything from eggs to enchiladas.",
+        price: "8oz $6 · 16oz $12 · 32oz $20",
+      },
+      {
+        name: "High Desert Heat Salsa",
+        description:
+          "Fresh made hot salsa — bold, spicy, and packed with flavor.",
+        price: "Pint 16oz $8 · Quart 32oz $14",
+      },
+      {
+        name: "Copper Canyon Salsa",
+        description:
+          "Fresh made medium salsa — a perfect balance of heat and freshness.",
+        price: "Pint 16oz $8 · Quart 32oz $14",
+      },
+      {
+        name: "Lantern Glow Salsa",
+        description:
+          "Fresh made mild salsa — bright, flavorful, gentle on the heat.",
+        price: "Pint 16oz $8 · Quart 32oz $14",
+      },
+    ],
+  },
 ];

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { siteConfig } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The story behind Porch Light Flavor Co. — handcrafted baked goods made with care in Prescott Valley, AZ.",
+    "The story behind Porch Light Flavor Co. — handcrafted baked goods made with love in Prescott Valley, AZ.",
 };
 
 export default function AboutPage() {
@@ -24,7 +23,7 @@ export default function AboutPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start mb-16">
-        {/* Image placeholder */}
+        {/* Image placeholder — swap in a real photo */}
         <div className="aspect-square rounded-3xl bg-[var(--color-cream-dark)] flex items-center justify-center">
           <span
             className="text-8xl font-light opacity-10 text-[var(--color-brown)]"
@@ -36,22 +35,23 @@ export default function AboutPage() {
         </div>
 
         <div className="space-y-5">
-          <p className="text-lg leading-relaxed text-[var(--color-brown-light)]">
-            Porch Light Flavor Co. started the way the best things do — with a warm kitchen,
-            good ingredients, and the desire to share something made with care.
+          <p className="text-lg leading-relaxed text-[var(--color-brown)]" style={{ fontFamily: "var(--font-display)" }}>
+            If you had told me years ago that I'd fall in love with baking, I probably wouldn't have believed you.
           </p>
           <p className="leading-relaxed text-[var(--color-brown-muted)]">
-            Every item we bake is made from scratch in small batches. No shortcuts, no
-            preservatives — just real butter, fresh eggs, and flavors worth savoring. We
-            believe a great muffin or a slice of cake can turn an ordinary day into a
-            memorable one.
+            I started out as a total tomboy who didn't care much for cooking at all. But getting married changed everything. What was a challenge became something I made myself to — and somewhere along the way, I completely fell in love with it.
           </p>
           <p className="leading-relaxed text-[var(--color-brown-muted)]">
-            We serve Prescott Valley and the surrounding Quad City area with pickup and
-            local delivery, plus wholesale and catering for businesses, churches, and events.
+            For over 25 years now, baking has been part of my life. What began as learning and growing in the kitchen turned into a true passion. There's something special about creating food that brings people together, and that's what Porch Light Flavor Co. is all about — bringing warmth, comfort, and a little extra joy into your home.
           </p>
           <p className="leading-relaxed text-[var(--color-brown-muted)]">
-            {siteConfig.deliveryNote}
+            I'm a Christian, a wife, a mom of three! Jesus and my family are my greatest inspiration. They've been with me through every experiment, every success, every flop 🤭, and every recipe that's become a favorite. Everything I make is created with that same love and care I give to them.
+          </p>
+          <p className="leading-relaxed text-[var(--color-brown-muted)]">
+            My faith is at the center of who I am. I love Jesus, and that love shapes how I live, serve, and create. Porch Light Flavor Co. is more than just baked goods — it's a way for me to share light, kindness, and something meaningful with others.
+          </p>
+          <p className="leading-relaxed text-[var(--color-brown-muted)] italic">
+            I hope every bite feels like home and reminds you that the simplest things can bring the greatest joy.
           </p>
         </div>
       </div>
