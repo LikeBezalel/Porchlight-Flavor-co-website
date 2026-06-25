@@ -5,7 +5,7 @@ export const siteConfig = {
   email: "joy@porchlightflavorco.com",
   area: "Prescott Valley and the Quad City area",
   deliveryNote:
-    "Serving Prescott Valley and the Quad City area with pickup, local delivery, catering, and wholesale options. Ask about free delivery for larger orders.",
+    "Serving Prescott Valley and the Quad City area with pickup, local delivery, catering, and wholesale options.",
   socials: {
     instagram: "https://instagram.com/porchlightflavorco",
     facebook: "https://facebook.com/porchlightflavorco",
