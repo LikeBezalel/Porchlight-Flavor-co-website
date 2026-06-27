@@ -1,13 +1,85 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { menuCategories } from "@/data/menu";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Menu",
   description: "Browse our full menu of handcrafted muffins, cake slices, breads, and treats.",
 };
 
-export default function MenuPage() {
+// Always render fresh so CRM edits show up immediately.
+export const revalidate = 0;
+
+type Category = {
+  id: string;
+  title: string;
+  tagline: string;
+  label: string | null;
+  items: {
+    name: string;
+    description: string;
+    price: string | null;
+    image: string | null;
+  }[];
+};
+
+async function getMenu(): Promise<Category[] | null> {
+  try {
+    const supabase = await createClient();
+    const [{ data: cats }, { data: items }] = await Promise.all([
+      supabase
+        .from("menu_categories")
+        .select("*")
+        .eq("visible", true)
+        .order("sort_order"),
+      supabase
+        .from("menu_items")
+        .select("*")
+        .eq("visible", true)
+        .order("sort_order"),
+    ]);
+
+    if (!cats || cats.length === 0) return null;
+
+    return cats.map((cat) => ({
+      id: cat.id,
+      title: cat.title,
+      tagline: cat.tagline,
+      label: cat.label,
+      items: (items ?? [])
+        .filter((i) => i.category_id === cat.id)
+        .map((i) => ({
+          name: i.name,
+          description: i.description,
+          price: i.price,
+          image: i.image_url,
+        })),
+    }));
+  } catch {
+    return null;
+  }
+}
+
+export default async function MenuPage() {
+  const dbMenu = await getMenu();
+
+  // Fall back to static data if the DB has no categories yet.
+  const categories: Category[] =
+    dbMenu ??
+    menuCategories.map((cat) => ({
+      id: cat.id,
+      title: cat.title,
+      tagline: cat.tagline,
+      label: cat.label ?? null,
+      items: cat.items.map((i) => ({
+        name: i.name,
+        description: i.description,
+        price: i.price ?? null,
+        image: i.image ?? null,
+      })),
+    }));
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16">
       <div className="text-center mb-14">
@@ -23,7 +95,7 @@ export default function MenuPage() {
       </div>
 
       <div className="space-y-20">
-        {menuCategories.map((cat) => (
+        {categories.map((cat) => (
           <section key={cat.id} id={cat.id} className="scroll-mt-24">
             <div className="mb-6 pb-4 border-b border-[var(--color-parchment)]">
               <h2
@@ -48,14 +120,13 @@ export default function MenuPage() {
                   key={item.name}
                   className="rounded-2xl bg-[var(--color-warm-white)] border border-[var(--color-parchment)] overflow-hidden"
                 >
-                  {/* Image placeholder — swap in a real image by adding item.image to menu.ts */}
-                  <div className="aspect-[3/2] bg-[var(--color-cream-dark)] flex items-end justify-end p-3">
+                  <div className="aspect-[3/2] bg-[var(--color-cream-dark)] overflow-hidden">
                     {item.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover absolute inset-0"
+                        className="w-full h-full object-cover"
                       />
                     ) : null}
                   </div>
