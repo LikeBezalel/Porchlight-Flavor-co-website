@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { sendOrderNotification } from "@/lib/email";
 
 // Validation helpers
 function isValidEmail(v: string) {
@@ -64,10 +65,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to save order request" }, { status: 500 });
   }
 
-  // TODO: send notification emails (Joy + customer) here once Resend is configured
-  // import { Resend } from 'resend';
-  // const resend = new Resend(process.env.RESEND_API_KEY);
-  // await resend.emails.send({ from: process.env.RESEND_FROM_EMAIL!, to: [process.env.ORDER_NOTIFICATION_EMAIL!, payload.email], ... });
+  // Notify the owner. Never let an email failure block a successful order.
+  try {
+    await sendOrderNotification(payload);
+  } catch (err) {
+    console.error("Order notification email failed:", err);
+  }
 
   return NextResponse.json({ success: true }, { status: 201 });
 }
