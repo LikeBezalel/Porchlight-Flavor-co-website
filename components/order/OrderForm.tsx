@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { OrderFormData } from "@/lib/types";
+import { siteConfig } from "@/data/site";
 
 const INTEREST_OPTIONS = [
   "Muffins",
@@ -353,12 +354,12 @@ export default function OrderForm({ defaultWholesale = false }: { defaultWholesa
       {status === "error" && (
         <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">
           Something went wrong sending your request. Please call or email us directly:{" "}
-          <a href="tel:(928) 555-0100" className="font-semibold underline">
-            (928) 555-0100
+          <a href={`tel:${siteConfig.phone}`} className="font-semibold underline">
+            {siteConfig.phone}
           </a>{" "}
           /{" "}
-          <a href="mailto:hello@porchlightflavor.com" className="font-semibold underline">
-            hello@porchlightflavor.com
+          <a href={`mailto:${siteConfig.email}`} className="font-semibold underline">
+            {siteConfig.email}
           </a>
         </div>
       )}
