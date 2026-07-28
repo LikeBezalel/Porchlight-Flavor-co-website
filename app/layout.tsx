@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Porch Light Flavor Co.",
   },
   description:
-    "Artisan muffins, cake slices, breads, brownies, and cookies. Serving Prescott Valley and the Quad City area with pickup, local delivery, catering, and wholesale.",
+    "Artisan muffins, cake slices, breads, brownies, and cookies. Serving Prescott Valley and the Tri-City area with pickup, local delivery, catering, and wholesale.",
 };
 
 export default function RootLayout({

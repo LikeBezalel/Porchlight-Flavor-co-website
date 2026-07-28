@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { menuCategories } from "@/data/menu";
 import { siteConfig } from "@/data/site";
 import { createClient } from "@/lib/supabase/server";
@@ -27,6 +28,17 @@ export default async function Home() {
     <>
       {/* Hero */}
       <section className="porch-light-glow relative bg-[var(--color-cream-dark)] overflow-hidden">
+        {/* Background photo */}
+        <Image
+          src="/Porch Light Bg.PNG"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center z-0"
+        />
+        {/* Light scrim so the dark hero text stays readable over the photo */}
+        <div className="absolute inset-0 z-0 bg-[var(--color-cream)]/75 sm:bg-[var(--color-cream)]/70" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] mb-4">
             Handcrafted in small batches

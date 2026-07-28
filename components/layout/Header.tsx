@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
-import { siteConfig } from "@/data/site";
 
 const navLinks = [
   { href: "/menu", label: "Menu" },
@@ -18,13 +18,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-warm-white)] border-b border-[var(--color-parchment)] shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link
-          href="/"
-          className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-brown)] hover:text-[var(--color-gold)] transition-colors leading-tight"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          Porch Light<br className="hidden sm:block" />
-          <span className="sm:hidden"> </span>Flavor Co.
+        <Link href="/" aria-label="Porch Light Flavor Co. — home" className="flex items-center">
+          <Image
+            src="/logo.jpeg"
+            alt="Porch Light Flavor Co."
+            width={1050}
+            height={600}
+            priority
+            className="h-10 sm:h-12 w-auto"
+          />
         </Link>
 
         {/* Desktop nav */}
