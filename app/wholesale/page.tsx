@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Wholesale & Catering",
   description:
-    "Homemade muffins, cake slices, breads, cookies, brownies and treats for local wholesale and catering orders in Prescott Valley and the Quad City area.",
+    "Homemade muffins, cake slices, breads, cookies, brownies and treats for local wholesale and catering orders in Prescott Valley and the Tri-City area.",
 };
 
 export default function WholesalePage() {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { siteConfig } from "@/data/site";
 
 export default function Footer() {
@@ -15,6 +16,22 @@ export default function Footer() {
           <p className="text-sm text-white/50 leading-relaxed">
             {siteConfig.deliveryNote}
           </p>
+          <div className="mt-4 flex items-center gap-3">
+            <span className="inline-flex bg-white rounded-lg p-1.5">
+              <Image
+                src="/flip_badge.jpeg"
+                alt="FLIP Trusted Coverage"
+                width={258}
+                height={222}
+                className="h-14 w-auto"
+              />
+            </span>
+            <p className="text-xs text-white/50 leading-snug">
+              Cottage Food License
+              <br />
+              CF-119843
+            </p>
+          </div>
         </div>
 
         <div>
