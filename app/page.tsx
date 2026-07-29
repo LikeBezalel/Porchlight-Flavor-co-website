@@ -42,7 +42,7 @@ export default async function Home() {
           className="absolute inset-0 z-0"
           style={{
             background:
-              "radial-gradient(ellipse 75% 65% at 50% 46%, rgba(247,247,245,0.88) 0%, rgba(247,247,245,0.62) 42%, rgba(247,247,245,0) 78%)",
+              "radial-gradient(ellipse 82% 80% at 50% 54%, rgba(247,247,245,0.85) 0%, rgba(247,247,245,0.7) 30%, rgba(247,247,245,0.45) 55%, rgba(247,247,245,0.18) 75%, rgba(247,247,245,0) 100%)",
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
