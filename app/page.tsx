@@ -37,8 +37,14 @@ export default async function Home() {
           sizes="100vw"
           className="object-cover object-center z-0"
         />
-        {/* Light scrim so the dark hero text stays readable over the photo */}
-        <div className="absolute inset-0 z-0 bg-[var(--color-cream)]/75 sm:bg-[var(--color-cream)]/70" />
+        {/* Soft radial wash — readable behind the text, fully clear at the edges so the photo shows */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 76% 72% at 50% 50%, rgba(247,247,245,0.9) 0%, rgba(247,247,245,0.78) 34%, rgba(247,247,245,0.5) 56%, rgba(247,247,245,0.2) 74%, rgba(247,247,245,0) 88%)",
+          }}
+        />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] mb-4">
             Handcrafted in small batches
