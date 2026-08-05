@@ -19,11 +19,11 @@ export default function Footer() {
           <div className="mt-4 flex items-center gap-3">
             <span className="inline-flex bg-white rounded-lg p-1.5">
               <Image
-                src="/flip_badge.jpeg"
+                src="/FLIP.png"
                 alt="FLIP Trusted Coverage"
-                width={258}
-                height={222}
-                className="h-14 w-auto"
+                width={257}
+                height={257}
+                className="h-16 w-16 object-contain"
               />
             </span>
             <p className="text-xs text-white/50 leading-snug">

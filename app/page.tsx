@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { menuCategories } from "@/data/menu";
-import { siteConfig } from "@/data/site";
 import { createClient } from "@/lib/supabase/server";
 
 async function getFeaturedItems() {
@@ -47,18 +46,21 @@ export default async function Home() {
         />
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] mb-4">
-            Handcrafted in small batches
+            Joy in every bite. Fire in every jar.
           </p>
           <h1
             className="text-5xl sm:text-7xl font-light text-[var(--color-brown)] mb-6 leading-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Baked with love,
+            Where Every Bite
             <br />
-            <em className="italic">delivered with warmth.</em>
+            <em className="italic">Feels Like Home!</em>
           </h1>
-          <p className="text-base sm:text-lg text-[var(--color-brown-muted)] max-w-xl mx-auto mb-10 leading-relaxed">
-            {siteConfig.deliveryNote}
+          <p className="text-base sm:text-lg text-[var(--color-brown-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
+            Small-batch baked goods made with simple ingredients and a whole lot of heart.
+            Experience the finest artisanal foods from Porch Light Flavor Co., made fresh
+            daily using time-honored recipes. Everything we make is baked in small batches to
+            bring comfort, connection, and a little extra light to your day!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
