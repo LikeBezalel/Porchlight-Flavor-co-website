@@ -34,6 +34,7 @@ export default function MenuManager({ categories: initCats, items: initItems, su
   const [categories, setCategories] = useState(initCats);
   const [items, setItems] = useState(initItems);
   const [editingItem, setEditingItem] = useState<DbMenuItem | null>(null);
+  const [editingCategory, setEditingCategory] = useState<DbCategory | null>(null);
   const [newItem, setNewItem] = useState<Partial<DbMenuItem> | null>(null);
   const [activeCategory, setActiveCategory] = useState(initCats[0]?.id ?? "");
   const [uploading, setUploading] = useState(false);
@@ -71,6 +72,17 @@ export default function MenuManager({ categories: initCats, items: initItems, su
     if (error) { setError(error.message); return; }
     setItems((prev) => prev.map((i) => (i.id === item.id ? item : i)));
     setEditingItem(null);
+  }
+
+  async function saveCategory(cat: DbCategory) {
+    setError("");
+    const { error } = await supabase
+      .from("menu_categories")
+      .update({ title: cat.title, tagline: cat.tagline, label: cat.label })
+      .eq("id", cat.id);
+    if (error) { setError(error.message); return; }
+    setCategories((prev) => prev.map((c) => (c.id === cat.id ? cat : c)));
+    setEditingCategory(null);
   }
 
   async function addItem(item: Partial<DbMenuItem>) {
@@ -135,7 +147,7 @@ export default function MenuManager({ categories: initCats, items: initItems, su
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => { setActiveCategory(cat.id); setEditingItem(null); setNewItem(null); }}
+            onClick={() => { setActiveCategory(cat.id); setEditingItem(null); setNewItem(null); setEditingCategory(null); }}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               activeCategory === cat.id
                 ? "bg-[var(--color-gold)] text-white"
@@ -146,6 +158,84 @@ export default function MenuManager({ categories: initCats, items: initItems, su
           </button>
         ))}
       </div>
+
+      {/* Section (category) text — title, description, and the small pill label */}
+      {(() => {
+        const active = categories.find((c) => c.id === activeCategory);
+        if (!active) return null;
+        const isEditing = editingCategory?.id === active.id;
+        return (
+          <div className="bg-white rounded-2xl border border-[var(--color-parchment)] p-5">
+            {isEditing && editingCategory ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--color-brown-muted)] mb-1">Section title</label>
+                  <input
+                    value={editingCategory.title}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, title: e.target.value })}
+                    className="w-full border border-[var(--color-parchment)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-gold)] text-[var(--color-brown)]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--color-brown-muted)] mb-1">
+                    Description / pricing text (shown under the section title)
+                  </label>
+                  <textarea
+                    value={editingCategory.tagline}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, tagline: e.target.value })}
+                    rows={3}
+                    className="w-full border border-[var(--color-parchment)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-gold)] text-[var(--color-brown)] resize-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[var(--color-brown-muted)] mb-1">
+                    Small pill label (optional — leave blank for none)
+                  </label>
+                  <input
+                    value={editingCategory.label ?? ""}
+                    onChange={(e) => setEditingCategory({ ...editingCategory, label: e.target.value || null })}
+                    placeholder="e.g. 6-count minimum · $4.50 each"
+                    className="w-full border border-[var(--color-parchment)] rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[var(--color-gold)] text-[var(--color-brown)]"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => startTransition(() => { saveCategory(editingCategory); })}
+                    disabled={isPending}
+                    className="px-5 py-2 rounded-full bg-[var(--color-gold)] text-white text-sm font-semibold hover:bg-[var(--color-brown-light)] transition-colors disabled:opacity-50"
+                  >
+                    {isPending ? "Saving…" : "Save section"}
+                  </button>
+                  <button
+                    onClick={() => setEditingCategory(null)}
+                    className="px-5 py-2 rounded-full border border-[var(--color-parchment)] text-sm font-semibold text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] mb-1">Section text</p>
+                  <p className="text-sm text-[var(--color-brown-muted)] leading-relaxed">{active.tagline}</p>
+                  {active.label && (
+                    <span className="inline-block mt-2 text-xs font-semibold text-[var(--color-gold)] bg-[var(--color-gold-pale)] px-3 py-1 rounded-full">
+                      {active.label}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => { setEditingCategory(active); setEditingItem(null); setNewItem(null); }}
+                  className="flex-shrink-0 text-xs font-medium text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] px-3 py-1.5 rounded-full border border-[var(--color-parchment)] transition-colors"
+                >
+                  Edit section text
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Item list */}
       <div className="space-y-3">
