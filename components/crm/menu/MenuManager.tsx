@@ -37,6 +37,8 @@ export default function MenuManager({ categories: initCats, items: initItems, su
   const [editingCategory, setEditingCategory] = useState<DbCategory | null>(null);
   const [newItem, setNewItem] = useState<Partial<DbMenuItem> | null>(null);
   const [activeCategory, setActiveCategory] = useState(initCats[0]?.id ?? "");
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -83,6 +85,90 @@ export default function MenuManager({ categories: initCats, items: initItems, su
     if (error) { setError(error.message); return; }
     setCategories((prev) => prev.map((c) => (c.id === cat.id ? cat : c)));
     setEditingCategory(null);
+  }
+
+  function slugify(text: string) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  async function addCategory(title: string) {
+    setError("");
+    const clean = title.trim();
+    if (!clean) { setError("Give the new section a name."); return; }
+    // Build a unique id from the name
+    let base = slugify(clean) || "section";
+    let id = base;
+    let n = 2;
+    while (categories.some((c) => c.id === id)) { id = `${base}-${n++}`; }
+    const nextOrder = (categories.reduce((m, c) => Math.max(m, c.sort_order), 0) || 0) + 1;
+    const { data, error } = await supabase
+      .from("menu_categories")
+      .insert({
+        id,
+        title: clean,
+        tagline: "",
+        label: null,
+        sort_order: nextOrder,
+        visible: true,
+      })
+      .select()
+      .single();
+    if (error) { setError(error.message); return; }
+    setCategories((prev) => [...prev, data as DbCategory]);
+    setActiveCategory(id);
+    setAddingCategory(false);
+    setNewCategoryName("");
+    // Prompt the owner to fill in the description right away
+    setEditingCategory(data as DbCategory);
+  }
+
+  async function deleteCategory(cat: DbCategory) {
+    const count = items.filter((i) => i.category_id === cat.id).length;
+    if (
+      !confirm(
+        `Delete the "${cat.title}" section${count ? ` and its ${count} item${count > 1 ? "s" : ""}` : ""}? This can't be undone.`
+      )
+    )
+      return;
+    setError("");
+    const { error } = await supabase.from("menu_categories").delete().eq("id", cat.id);
+    if (error) { setError(error.message); return; }
+    const remaining = categories.filter((c) => c.id !== cat.id);
+    setCategories(remaining);
+    setItems((prev) => prev.filter((i) => i.category_id !== cat.id));
+    if (activeCategory === cat.id) setActiveCategory(remaining[0]?.id ?? "");
+  }
+
+  async function toggleCategoryVisible(cat: DbCategory) {
+    const updated = { ...cat, visible: !cat.visible };
+    const { error } = await supabase
+      .from("menu_categories")
+      .update({ visible: updated.visible })
+      .eq("id", cat.id);
+    if (error) { setError(error.message); return; }
+    setCategories((prev) => prev.map((c) => (c.id === cat.id ? updated : c)));
+  }
+
+  async function moveCategory(cat: DbCategory, dir: -1 | 1) {
+    const ordered = [...categories].sort((a, b) => a.sort_order - b.sort_order);
+    const idx = ordered.findIndex((c) => c.id === cat.id);
+    const swapWith = ordered[idx + dir];
+    if (!swapWith) return;
+    setError("");
+    const a = { ...cat, sort_order: swapWith.sort_order };
+    const b = { ...swapWith, sort_order: cat.sort_order };
+    const [r1, r2] = await Promise.all([
+      supabase.from("menu_categories").update({ sort_order: a.sort_order }).eq("id", a.id),
+      supabase.from("menu_categories").update({ sort_order: b.sort_order }).eq("id", b.id),
+    ]);
+    if (r1.error || r2.error) { setError((r1.error || r2.error)!.message); return; }
+    setCategories((prev) =>
+      prev.map((c) => (c.id === a.id ? a : c.id === b.id ? b : c))
+    );
   }
 
   async function addItem(item: Partial<DbMenuItem>) {
@@ -143,20 +229,59 @@ export default function MenuManager({ categories: initCats, items: initItems, su
       )}
 
       {/* Category tabs */}
-      <div className="flex gap-2 flex-wrap">
-        {categories.map((cat) => (
+      <div className="flex gap-2 flex-wrap items-center">
+        {[...categories]
+          .sort((a, b) => a.sort_order - b.sort_order)
+          .map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => { setActiveCategory(cat.id); setEditingItem(null); setNewItem(null); setEditingCategory(null); }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                activeCategory === cat.id
+                  ? "bg-[var(--color-gold)] text-white"
+                  : "bg-[var(--color-cream-dark)] text-[var(--color-brown-muted)] hover:text-[var(--color-brown)]"
+              } ${!cat.visible ? "opacity-50" : ""}`}
+            >
+              {cat.title}
+              {!cat.visible && <span className="ml-1.5 text-[10px] uppercase tracking-wide">(hidden)</span>}
+            </button>
+          ))}
+
+        {addingCategory ? (
+          <span className="inline-flex items-center gap-1.5">
+            <input
+              autoFocus
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") startTransition(() => { addCategory(newCategoryName); });
+                if (e.key === "Escape") { setAddingCategory(false); setNewCategoryName(""); }
+              }}
+              placeholder="New section name…"
+              className="px-3 py-1.5 rounded-full border border-[var(--color-gold)] text-sm focus:outline-none text-[var(--color-brown)] w-44"
+            />
+            <button
+              onClick={() => startTransition(() => { addCategory(newCategoryName); })}
+              disabled={isPending}
+              className="px-3 py-1.5 rounded-full bg-[var(--color-gold)] text-white text-xs font-semibold hover:bg-[var(--color-brown-light)] transition-colors disabled:opacity-50"
+            >
+              Add
+            </button>
+            <button
+              onClick={() => { setAddingCategory(false); setNewCategoryName(""); }}
+              className="text-xs text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] px-1"
+            >
+              Cancel
+            </button>
+          </span>
+        ) : (
           <button
-            key={cat.id}
-            onClick={() => { setActiveCategory(cat.id); setEditingItem(null); setNewItem(null); setEditingCategory(null); }}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              activeCategory === cat.id
-                ? "bg-[var(--color-gold)] text-white"
-                : "bg-[var(--color-cream-dark)] text-[var(--color-brown-muted)] hover:text-[var(--color-brown)]"
-            }`}
+            onClick={() => { setAddingCategory(true); setEditingCategory(null); setEditingItem(null); setNewItem(null); }}
+            className="px-4 py-2 rounded-full text-sm font-medium border border-dashed border-[var(--color-parchment)] text-[var(--color-brown-muted)] hover:border-[var(--color-gold)]/50 hover:text-[var(--color-gold)] transition-colors"
           >
-            {cat.title}
+            + Add section
           </button>
-        ))}
+        )}
       </div>
 
       {/* Section (category) text — title, description, and the small pill label */}
@@ -225,12 +350,40 @@ export default function MenuManager({ categories: initCats, items: initItems, su
                     </span>
                   )}
                 </div>
-                <button
-                  onClick={() => { setEditingCategory(active); setEditingItem(null); setNewItem(null); }}
-                  className="flex-shrink-0 text-xs font-medium text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] px-3 py-1.5 rounded-full border border-[var(--color-parchment)] transition-colors"
-                >
-                  Edit section text
-                </button>
+                <div className="flex-shrink-0 flex flex-wrap items-center justify-end gap-2">
+                  <button
+                    onClick={() => moveCategory(active, -1)}
+                    title="Move section left"
+                    className="text-sm text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] w-8 h-8 rounded-full border border-[var(--color-parchment)] transition-colors"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={() => moveCategory(active, 1)}
+                    title="Move section right"
+                    className="text-sm text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] w-8 h-8 rounded-full border border-[var(--color-parchment)] transition-colors"
+                  >
+                    →
+                  </button>
+                  <button
+                    onClick={() => toggleCategoryVisible(active)}
+                    className="text-xs font-medium text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] px-3 py-1.5 rounded-full border border-[var(--color-parchment)] transition-colors"
+                  >
+                    {active.visible ? "Hide" : "Show"}
+                  </button>
+                  <button
+                    onClick={() => { setEditingCategory(active); setEditingItem(null); setNewItem(null); }}
+                    className="text-xs font-medium text-[var(--color-brown-muted)] hover:text-[var(--color-brown)] px-3 py-1.5 rounded-full border border-[var(--color-parchment)] transition-colors"
+                  >
+                    Edit section text
+                  </button>
+                  <button
+                    onClick={() => deleteCategory(active)}
+                    className="text-xs font-medium text-red-500 hover:text-red-700 px-3 py-1.5 rounded-full border border-red-100 hover:border-red-300 transition-colors"
+                  >
+                    Delete section
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -2,6 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { menuCategories } from "@/data/menu";
 import { createClient } from "@/lib/supabase/server";
+import TestimonialCard, { type Testimonial } from "@/components/reviews/TestimonialCard";
+
+export const revalidate = 0;
 
 async function getFeaturedItems() {
   try {
@@ -19,8 +22,24 @@ async function getFeaturedItems() {
   }
 }
 
+async function getTestimonials(): Promise<Testimonial[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("testimonials")
+      .select("id, name, location, rating, quote")
+      .eq("approved", true)
+      .order("created_at", { ascending: false })
+      .limit(3);
+    return (data ?? []) as Testimonial[];
+  } catch {
+    return [];
+  }
+}
+
 export default async function Home() {
   const featuredItems = await getFeaturedItems();
+  const testimonials = await getTestimonials();
   const fallbackCategories = menuCategories.slice(0, 4);
 
   return (
@@ -258,6 +277,36 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      {testimonials.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold)] mb-2">
+              Kind words
+            </p>
+            <h2
+              className="text-4xl font-light text-[var(--color-brown)]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              What our customers say
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {testimonials.map((t) => (
+              <TestimonialCard key={t.id} t={t} />
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link
+              href="/reviews"
+              className="text-sm font-semibold text-[var(--color-gold)] hover:text-[var(--color-brown-light)] underline underline-offset-4"
+            >
+              Read more reviews →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Final CTA */}
       <section className="bg-[var(--color-gold-pale)] py-20 text-center">
