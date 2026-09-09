@@ -18,6 +18,7 @@ export default function CRMHeader({ userEmail }: { userEmail: string }) {
   const tabs = [
     { href: "/crm", label: "Orders" },
     { href: "/crm/menu", label: "Menu" },
+    { href: "/crm/reviews", label: "Reviews" },
   ];
 
   return (
